@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+import rclpy
+from rclpy.node import Node
+from robot_pub.msg import BallPos
+
+class BallPublisher(Node):
+    def __init__(self):
+        super().__init__('ball_publisher')
+        self.publisher_ = self.create_publisher(BallPos, 'ball_pos', 10)
+        timer_period = 0.5  # 0.5秒发一次
+        self.timer = self.create_timer(timer_period, self.timer_callback)
+        self.count = 0
+
+    def timer_callback(self):
+        msg = BallPos()
+        msg.id = self.count
+        msg.x = 1.0 + 0.1 * self.count
+        msg.y = 2.0 + 0.1 * self.count
+        self.publisher_.publish(msg)
+        self.get_logger().info(f'发布：id={msg.id}, x={msg.x}, y={msg.y}')
+        self.count += 1
+
+def main(args=None):
+    rclpy.init(args=args)
+    ball_publisher = BallPublisher()
+    rclpy.spin(ball_publisher)
+    ball_publi
